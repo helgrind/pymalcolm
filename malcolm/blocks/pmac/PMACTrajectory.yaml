@@ -16,7 +16,7 @@
 - parts.ca.CALongPart:
     name: i10
     description: Value of i10 (servo ticks)
-    rbv: $(statPrefix):I10
+    rbv: $(statPrefix):T1:HM:I10
     widget: textupdate
 
 - parts.ca.CAChoicePart:
