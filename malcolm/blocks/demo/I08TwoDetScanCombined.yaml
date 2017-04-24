@@ -18,7 +18,12 @@
     name: pandabox
     description: MRI for PandABoxManager object
 
+- parameters.string:
+    name: configDir
+    description: Where to store saved configs
+
 - controllers.RunnableController:
+    configDir: $(configDir)
     mri: $(mri)
     axesToMove: [SampleX, SampleY]
 

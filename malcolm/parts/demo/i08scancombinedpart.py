@@ -7,17 +7,11 @@ from malcolm.controllers.runnablecontroller import RunnableController
 
 class I08ScanCombinedPart(RunnableChildPart):
     def _get_range(self, params, name="X"):
-        # Make some very specific assumptions about the generator
         search_name = "Sample%s" % name
-        for g in params.generator.generators:
-            if isinstance(g, LineGenerator):
-                if search_name in g.name:
-                    i = g.name.index(search_name)
-                    return g.start[i], g.stop[i]
-            elif isinstance(g, SpiralGenerator):
-                if search_name in g.names:
-                    i = g.names.index(search_name)
-                    return g.centre[i] - g.radius, g.centre[i] + g.radius
+        for d in params.generator.dimensions:
+            if search_name in d.axes:
+                index = d.axes.index(search_name)
+                return d.lower[index], d.upper[index]
         current = self.child["positionT1%sC" % name].value
         return current, current
 
