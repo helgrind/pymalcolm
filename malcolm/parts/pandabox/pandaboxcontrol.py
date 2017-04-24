@@ -32,8 +32,7 @@ class PandABoxControl(Loggable, Spawnable):
 
     def send(self, message):
         response_queue = self.process.create_queue()
-        self.response_queues.put(response_queue)
-        self.q.put(message)
+        self.q.put((message, response_queue))
         return response_queue
 
     def recv(self, response_queue, timeout=1.0):
@@ -60,11 +59,12 @@ class PandABoxControl(Loggable, Spawnable):
     def send_loop(self):
         """Service self.q, sending requests to server"""
         while True:
-            message = self.q.get()
+            message, response_queue = self.q.get()
             if message is Spawnable.STOP:
                 break
             try:
                 self.log_debug("Sending %r", message)
+                self.response_queues.put(response_queue)
                 self.socket.send(message)
             except Exception:  # pylint:disable=broad-except
                 self.log_exception(
@@ -241,8 +241,11 @@ class PandABoxControl(Loggable, Spawnable):
                 field = line.rstrip("<")
                 val = None
                 table_queues[field] = self.send("%s?\n" % field)
-            else:
+            elif "=" in line:
                 field, val = line.split("=", 1)
+            else:
+                self.log_warning("Can't parse line %r of changes", line)
+                continue
             # TODO: Goes in server
             if val in ("POSITIONS.ZERO", "BITS.ZERO"):
                 val = "ZERO"
@@ -263,9 +266,14 @@ class PandABoxControl(Loggable, Spawnable):
         return fields
 
     def set_field(self, block, field, value):
-        resp = self.send_recv("%s.%s=%s\n" % (block, field, value))
-        assert resp == "OK", \
-            "Expected OK, got %r" % resp
+        try:
+            resp = self.send_recv("%s.%s=%s\n" % (block, field, value))
+        except ValueError as e:
+            raise ValueError("Error setting %s.%s to %r: %s" % (
+                block, field, value, e))
+        else:
+            assert resp == "OK", \
+                "Expected OK, got %r" % resp
 
     def set_table(self, block, field, int_values):
         lines = ["%s.%s<\n" % (block, field)]

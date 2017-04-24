@@ -3,7 +3,7 @@ from __future__ import division
 from collections import Counter
 
 import numpy as np
-from scanpointgenerator import FixedDurationMutator, CompoundGenerator
+from scanpointgenerator import CompoundGenerator
 
 from malcolm.controllers.runnablecontroller import RunnableController, \
     ParameterTweakInfo
@@ -107,7 +107,7 @@ class MotorInfo(Info):
         tm = dm / vm
         return t1, tm, t2, vm
 
-    def _make_hat(self, v1, v2, acceleration, distance, min_time=MIN_TIME):
+    def _make_hat(self, v1, v2, acceleration, distance, min_time):
         """Make a hat that looks like this:
 
             ______ vm
@@ -175,7 +175,7 @@ class MotorInfo(Info):
         yield tm, vm
         yield t2, v2
 
-    def make_velocity_profile(self, v1, v2, distance, min_time=MIN_TIME):
+    def make_velocity_profile(self, v1, v2, distance, min_time):
         """Calculate PVT points that will perform the move within motor params
 
         Args:
@@ -215,10 +215,10 @@ class MotorInfo(Info):
                 it = self._make_padded_ramp(v1, v2, pad_velocity, min_time)
         elif remaining_distance < 0:
             # Make a hat pointing down
-            it = self._make_hat(v1, v2, -self.acceleration, distance)
+            it = self._make_hat(v1, v2, -self.acceleration, distance, min_time)
         else:
             # Make a hat pointing up
-            it = self._make_hat(v1, v2, self.acceleration, distance)
+            it = self._make_hat(v1, v2, self.acceleration, distance, min_time)
         # Create the time and velocity arrays
         time_array = [0.0]
         velocity_array = [v1]
@@ -282,27 +282,23 @@ class PMACTrajectoryPart(ChildPart):
     @method_takes(*configure_args)
     def validate(self, task, part_info, params):
         self._make_axis_mapping(part_info, params.axesToMove)
-        # Find the last FixedDurationMutator
-        mutators = []
-        fdm = None
-        for mutator in params.generator.mutators:
-            if isinstance(mutator, FixedDurationMutator):
-                fdm = mutator
-            else:
-                mutators.append(mutator)
+        # Find the duration
+        assert params.generator.duration > 0, \
+            "Can only do fixed duration at the moment"
         servo_freq = 8388608000. / self.child.i10
         # convert half an exposure to multiple of servo ticks, rounding down
         # + 0.002 for some observed jitter in the servo frequency (I18)
-        ticks = np.floor(servo_freq * 0.5 * fdm.duration) + 0.002
+        ticks = np.floor(servo_freq * 0.5 * params.generator.duration) + 0.002
         # convert to integer number of microseconds, rounding up
         micros = np.ceil(ticks / servo_freq * 1e6)
         # back to duration
         duration = 2 * float(micros) / 1e6
-        if duration != fdm.duration:
+        if duration != params.generator.duration:
             new_generator = CompoundGenerator(
                 generators=params.generator.generators,
                 excluders=params.generator.excluders,
-                mutators=mutators + [FixedDurationMutator(duration)])
+                mutators=params.generator.mutators,
+                duration=duration)
             return [ParameterTweakInfo("generator", new_generator)]
 
     def _make_axis_mapping(self, part_info, axes_to_move):
