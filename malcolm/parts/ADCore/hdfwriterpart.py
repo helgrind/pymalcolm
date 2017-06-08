@@ -1,4 +1,5 @@
 import os
+import math as m
 from xml.etree import cElementTree as ET
 
 from malcolm.compat import et_to_string
@@ -46,6 +47,9 @@ class HDFWriterPart(ChildPart):
     start_future = None
     array_future = None
     done_when_reaches = 0
+
+    # The HDF5 layout file we write to say where the datasets go
+    layout_filename = None
 
     def _create_dataset_infos(self, part_info, generator, filename):
         # Update the dataset table
@@ -115,7 +119,14 @@ class HDFWriterPart(ChildPart):
     @RunnableController.Configure
     @method_takes(
         "generator", PointGeneratorMeta("Generator instance"), REQUIRED,
-        "filePath", StringMeta("File path to write data to"), REQUIRED)
+        "fileDir", StringMeta("Directory to write hdf file to"), REQUIRED,
+        "formatName", StringMeta(
+            "Name argument for fileTemplate, normally filename without extension"),
+        REQUIRED,
+        "fileTemplate", StringMeta(
+            """Printf style template to generate filename relative to fileDir.
+            Arguments are:
+              1) %s: the value of formatName"""), "%s.h5")
     def configure(self, task, completed_steps, steps_to_do, part_info, params):
         self.done_when_reaches = completed_steps + steps_to_do
         # For first run then open the file
@@ -123,8 +134,8 @@ class HDFWriterPart(ChildPart):
         task.put(self.child["positionMode"], True)
         # Setup our required settings
         # TODO: this should be different for windows detectors
-        file_path = params.filePath.rstrip(os.sep)
-        file_dir, filename = file_path.rsplit(os.sep, 1)
+        file_dir = params.fileDir.rstrip(os.sep)
+        filename = params.fileTemplate % params.formatName
         assert "." in filename, \
             "File extension for %r should be supplied" % filename
         futures = task.put_many_async(self.child, dict(
@@ -136,30 +147,37 @@ class HDFWriterPart(ChildPart):
             lazyOpen=True,
             arrayCounter=0,
             filePath=file_dir + os.sep,
-            fileName=filename,
-            fileTemplate="%s%s"))
+            fileName=params.formatName,
+            fileTemplate="%s" + params.fileTemplate))
         futures += self._set_dimensions(task, params.generator)
         xml = self._make_layout_xml(params.generator, part_info)
-        layout_filename = os.path.join(
+        self.layout_filename = os.path.join(
             file_dir, "%s-layout.xml" % self.params.mri)
-        open(layout_filename, "w").write(xml)
-        futures += task.put_async(self.child["xml"], layout_filename)
+        open(self.layout_filename, "w").write(xml)
+        futures += task.put_async(self.child["xml"], self.layout_filename)
         # Wait for the previous puts to finish
         task.wait_all(futures)
         # Reset numCapture back to 0
         task.put(self.child["numCapture"], 0)
+        assert params.generator.duration > 0, \
+            "Duration %s for generator must be >0 to signify constant " \
+            "exposure" % params.generator.duration
         # We want the HDF writer to flush this often:
         flush_time = 1  # seconds
         # (In particular this means that HDF files can be read cleanly by
         # SciSoft at the start of a scan.)
-        assert params.generator.duration > 0, \
-            "Duration %s for generator must be >0 to signify constant exposure"\
-            % params.generator.duration
-        n_frames_between_flushes = max(2, round(
-            flush_time/params.generator.duration))
+        if params.generator.duration > flush_time:
+            # We are going slower than 1/flush_time Hz, so flush every frame
+            n_frames_between_flushes = 1
+        else:
+            # Limit update rate to be every flush_time seconds
+            n_frames_between_flushes = int(m.ceil(
+                flush_time / params.generator.duration))
+            # But make sure we flush in this round of frames
+            n_frames_between_flushes = min(
+                steps_to_do, n_frames_between_flushes)
         task.put(self.child["flushDataPerNFrames"], n_frames_between_flushes)
         task.put(self.child["flushAttrPerNFrames"], n_frames_between_flushes)
-
         # Start the plugin
         self.start_future = task.post_async(self.child["start"])
         # Start a future waiting for the first array
@@ -193,6 +211,8 @@ class HDFWriterPart(ChildPart):
     def post_run_idle(self, task):
         # If this is the last one, wait until the file is closed
         task.wait_all(self.start_future)
+        # Delete the layout XML file
+        os.remove(self.layout_filename)
 
     @RunnableController.Abort
     def abort(self, task):
