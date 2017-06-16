@@ -37,4 +37,4 @@
     mri: $(mriPrefix)-TRAJ
     prefix: BL18I-MO-STEP-06:GB
     statPrefix: BL18I-MO-STEP-06
-    minTurnaround: 2
+    minTurnaround: 1
