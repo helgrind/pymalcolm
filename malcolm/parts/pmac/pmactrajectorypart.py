@@ -336,7 +336,7 @@ class PMACTrajectoryPart(ChildPart):
         cs_port, self.axis_mapping = self._make_axis_mapping(
             part_info, params.axesToMove)
         # Set the right CS to move
-        #task.put(self.child["cs"], cs_port)
+        task.put(self.child["cs"], cs_port)
         futures = self.move_to_start(task, completed_steps)
         self.steps_up_to = completed_steps + steps_to_do
         self.completed_steps_lookup = []
