@@ -243,7 +243,7 @@ class PandABoxBlockMaker(Loggable):
 
     def _make_field_part(self, field_name, meta, writeable, initial_value=None):
         if writeable:
-            meta.set_tags(meta.tags + (config(),))
+            meta.set_tags(meta.tags)
         part = PandABoxFieldPart(self.process, self.control, meta,
                                  self.block_name, field_name, writeable,
                                  initial_value)
