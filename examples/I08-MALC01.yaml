@@ -1,4 +1,4 @@
-#!/home/pjl45/R3.14.12.3/support/malcolm/pymalcolm/malcolm/imalcolm.py
+#!/dls_sw/work/R3.14.12.3/ioc/BL08I/BL08I-EA-MALC-01/malcolm/imalcolm.py
 - blocks.ADAndor.AndorDetectorManager:
     pvPrefix: BL08I-EA-DET-01
     mriPrefix: I08-ANDOR01
