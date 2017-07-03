@@ -77,7 +77,7 @@
     mri: $(mriPrefix):MASTER
     readoutTime: 12e-6
 
-- excalibur.parts.VDSWrapperPart:
+- excalibur.parts.ExcaliburVDSWrapperPart:
     name: VDS
     dataType: int32
     stripeHeight: 259
