@@ -23,7 +23,7 @@ class VDSWrapperPart(Part):
     EMPTY = "-e"
     OUTPUT = "-o"
     FILES = "-f"
-    SHAPE = "--shape"
+    SOURCE_SHAPE = "--source-shape"
     DATA_TYPE = "--data_type"
     DATA_PATH = "-d"
     STRIPE_SPACING = "-s"
@@ -31,6 +31,13 @@ class VDSWrapperPart(Part):
     FILL_VALUE = "-F"
     LOG_LEVEL = "-l"
     MODE = "--mode"
+    SUB_FRAMES = "--sub-frames"
+    INTERLEAVE = "interleave"
+    RESHAPE = "reshape"
+    NEW_SHAPE = "--new-shape"
+    ALTERNATE = "--alternate"
+    PROCESSES = "--processes"
+    TOTAL_FRAMES = "--total-frames"
 
     # Constants for class
     CREATE = "w"
@@ -50,9 +57,12 @@ class VDSWrapperPart(Part):
 
         self.done_when_reaches = None
 
+        self.generator = None
+        self.fill_value = None
+        self.file_dir = ""
+        self.file_template = ""
         self.vds_path = ""
         self.vds = None
-        self.command = []
         self.raw_paths = []
         self.raw_datasets = []
 
@@ -115,10 +125,13 @@ class VDSWrapperPart(Part):
     def configure(self, context, completed_steps, steps_to_do, part_info,
                   params):
         self.done_when_reaches = completed_steps + steps_to_do
+        self.file_template = params.fileTemplate
+        self.vds_path = os.path.join(
+            params.fileDir, params.fileTemplate % self.OUTPUT_FILE)
+        self.file_dir = params.fileDir
+        self.fill_value = params.fillValue
 
-        self.create_vds(
-            params.fileDir, params.generator, params.fillValue,
-            params.fileTemplate)
+        self.create_vds(params.generator)
 
         # Open the VDS
         self.vds = h5.File(
@@ -130,8 +143,29 @@ class VDSWrapperPart(Part):
 
         return dataset_infos
 
-    def create_vds(self, file_dir, generator, fill_value, file_template):
+    def create_vds(self, generator):
         raise NotImplementedError("Must be implemented in child classes")
+
+    def _construct_base_command(self, source_files, shape, mode, output=None):
+        if output is None:
+            output = self.OUTPUT_FILE
+
+        base_command = [self.VENV, self.VDS_GEN, self.file_dir,
+                        self.MODE, mode]
+        # Define sources as empty and define their eventual attributes
+        base_command += [self.EMPTY,
+                         self.SHAPE] + shape + \
+                        [self.FILES] + source_files + \
+                        [self.DATA_TYPE, self.data_type]
+        # Override defaults
+        base_command += [self.FILL_VALUE, str(self.fill_value),
+                         self.SOURCE_NODE, "/entry/detector/detector",
+                         self.TARGET_NODE, "/entry/detector/detector"]
+        # Define output file path
+        base_command += [self.OUTPUT, output]
+        base_command += [self.LOG_LEVEL, "1"]
+
+        return base_command
 
     @RunnableController.PostRunReady
     @RunnableController.Seek

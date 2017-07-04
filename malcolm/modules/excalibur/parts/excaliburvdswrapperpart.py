@@ -1,4 +1,3 @@
-import os
 import sys
 from subprocess import check_call
 
@@ -28,11 +27,9 @@ class ExcaliburVDSWrapperPart(VDSWrapperPart):
         self.stripe_width = params.stripeWidth
         self.fems = [1, 2, 3, 4, 5, 6]
 
-    def create_vds(self, file_dir, generator, fill_value, file_template):
+    def create_vds(self, generator):
         self.log.debug("Creating ExternalLinks from VDS to FEM1.h5")
-        self.vds_path = os.path.join(
-            file_dir, file_template % self.OUTPUT_FILE)
-        raw_file_path = file_template % self.RAW_FILE_TEMPLATE.format(1)
+        raw_file_path = self.file_template % self.RAW_FILE_TEMPLATE.format(1)
         node_tree = list(self.default_node_tree)
         for axis in generator.axes:
             for base in self.set_bases:
@@ -46,7 +43,7 @@ class ExcaliburVDSWrapperPart(VDSWrapperPart):
                 self.vds[node] = h5.ExternalLink(raw_file_path, node)
 
             # Create placeholder id and sum datasets
-            initial_dims = tuple([1 for _ in generator.shape])
+            initial_dims = tuple(1 for _ in generator.shape)
             initial_shape = initial_dims + (1, 1)
             max_shape = generator.shape + (1, 1)
             self.vds.create_dataset(self.ID, initial_shape,
@@ -55,27 +52,21 @@ class ExcaliburVDSWrapperPart(VDSWrapperPart):
                                     maxshape=max_shape, dtype="float64")
 
         self.log.debug("Calling vds-gen to create dataset in VDS")
-        files = [file_template % self.RAW_FILE_TEMPLATE.format(fem)
+        files = [self.file_template % self.RAW_FILE_TEMPLATE.format(fem)
                  for fem in self.fems]
         shape = [str(d) for d in generator.shape] + \
                 [str(self.stripe_height), str(self.stripe_width)]
-        # Base arguments
-        command = [self.VENV, self.VDS_GEN, file_dir]
-        # Define empty and required arguments to do so
-        command += [self.EMPTY,
-                    self.FILES] + files + \
-                   [self.SHAPE] + shape + \
-                   [self.DATA_TYPE, self.data_type]
-        # Override default spacing and data path
+        command = self._construct_base_command(files, shape, self.SUB_FRAMES)
+        # Define Excalibur specific arguments
         command += [self.STRIPE_SPACING, "0",
                     self.MODULE_SPACING, "121",
-                    self.FILL_VALUE, str(fill_value),
+                    self.FILL_VALUE, str(self.fill_value),
                     self.SOURCE_NODE, "/entry/detector/detector",
                     self.TARGET_NODE, "/entry/detector/detector"]
         # Define output file path
-        command += [self.OUTPUT, file_template % self.OUTPUT_FILE]
+        command += [self.OUTPUT, self.file_template % self.OUTPUT_FILE]
         command += [self.LOG_LEVEL, "1"]  # str(self.log.level / 10)]
-        self.log.info("Command: %s", command)
+        self.log.debug("Command: %s", command)
         check_call(command)
 
     def update_vds(self, ids):
