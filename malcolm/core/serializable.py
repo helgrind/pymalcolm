@@ -82,6 +82,8 @@ def serialize_object(o):
         elif isinstance(o, list):
             # Need to recurse down
             return [serialize_object(x) for x in o]
+        elif isinstance(o, np.ndarray):
+            return o.tolist()
         else:
             # Hope it's serializable!
             return o

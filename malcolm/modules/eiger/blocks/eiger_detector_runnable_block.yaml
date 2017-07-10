@@ -1,0 +1,119 @@
+# Parameters passed in by parent
+- builtin.parameters.string:
+    name: mriPrefix
+    description: Malcolm resource id of the Block and prefix for children
+
+- builtin.parameters.string:
+    name: pvPrefix
+    description: PV prefix for driver and all plugins
+
+- builtin.parameters.string:
+    name: configDir
+    description: Where to store saved configs
+
+- builtin.parameters.string:
+    name: processes
+    description: Total number of OdinData processes
+
+# Define parameters shared between child blocks
+- builtin.defines.string:
+    name: fanIP
+    value: 172.23.7.194
+#    value: cs04r-sc-serv-118-10g
+
+- builtin.defines.string:
+    name: serverIP1
+    value: 172.23.7.194
+#    value: cs04r-sc-serv-116-10g
+
+#- builtin.defines.string:
+#    name: serverIP2
+##    value: 172.23.7.194
+#    value: cs04r-sc-serv-117-10g
+
+# Controller for this Block
+- scanning.controllers.RunnableController:
+    mri: $(mriPrefix)
+    configDir: $(configDir)
+
+# Children of our Controller
+## ADEiger Block and Part
+#- eiger.blocks.eiger_detector_driver_block:
+#    mri: $(mriPrefix):DRV
+#    prefix: $(pvPrefix):CAM
+#
+#- eiger.parts.EigerDetectorDriverPart:
+#    name: DRV
+#    mri: $(mriPrefix):DRV
+#    readoutTime: 12e-6
+
+## EigerFan Part
+- eiger.parts.EigerFanPart:
+    name: FAN
+    ipAddress: $(fanIP)
+
+## OdinData block and part (x4)
+- OdinData.blocks.odin_data_runnable_block:
+    mriPrefix: $(mriPrefix):ODC1
+    configDir: $(configDir)
+    ipAddress: $(serverIP1)
+    serverRank: 0
+    fanIP: $(fanIP)
+    processes: $(processes)
+    rank: 0
+
+- OdinData.parts.OdinDataRunnableChildPart:
+    name: EIGER1
+    mri: $(mriPrefix):ODC1
+
+#- OdinData.blocks.odin_data_runnable_block:
+#    mriPrefix: $(mriPrefix):ODC2
+#    configDir: $(configDir)
+#    ipAddress: $(serverIP1)
+#    serverRank: 1
+#    fanIP: $(fanIP)
+#    processes: $(processes)
+#    rank: 1
+#
+#- OdinData.parts.OdinDataRunnableChildPart:
+#    name: EIGER2
+#    mri: $(mriPrefix):ODC2
+#
+#- OdinData.blocks.odin_data_runnable_block:
+#    mriPrefix: $(mriPrefix):ODC3
+#    configDir: $(configDir)
+#    ipAddress: $(serverIP2)
+#    serverRank: 0
+#    fanIP: $(fanIP)
+#    processes: $(processes)
+#    rank: 2
+#
+#- OdinData.parts.OdinDataRunnableChildPart:
+#    name: EIGER3
+#    mri: $(mriPrefix):ODC3
+#
+#- OdinData.blocks.odin_data_runnable_block:
+#    mriPrefix: $(mriPrefix):ODC4
+#    configDir: $(configDir)
+#    ipAddress: $(serverIP2)
+#    serverRank: 1
+#    fanIP: $(fanIP)
+#    processes: $(processes)
+#    rank: 3
+#
+#- OdinData.parts.OdinDataRunnableChildPart:
+#    name: EIGER4
+#    mri: $(mriPrefix):ODC4
+
+## MetaListener Part
+- OdinData.parts.MetaListenerPart:
+    name: META
+    ipAddress: $(fanIP)
+
+## VDS Generator
+- eiger.parts.EigerVDSWrapperPart:
+    name: VDS
+    dataType: "uint16"
+    processes: $(processes)
+    dimensionX: 2070
+    dimensionY: 2167

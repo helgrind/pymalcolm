@@ -1,0 +1,38 @@
+# Parameters passed in by parent
+- builtin.parameters.string:
+    name: mriPrefix
+    description: Malcolm resource id of the Block and prefix for children
+
+- builtin.parameters.string:
+    name: configDir
+    description: Where to store saved configs
+
+- builtin.parameters.string:
+    name: ipAddress
+    description: IP address of OdinData server
+
+- builtin.parameters.string:
+    name: serverRank
+    description: Rank of process on this server
+
+- builtin.parameters.string:
+    name: fanIP
+    description: IP address of EigerFan server
+
+- builtin.parameters.string:
+    name: rank
+    description: Rank of this OdinData process
+
+- builtin.parameters.string:
+    name: processes
+    description: Total number of OdinData processes
+
+# Controller for this Block
+- OdinData.controllers.OdinDataRunnableController:
+    mri: $(mriPrefix)
+    configDir: $(configDir)
+    ipAddress: $(ipAddress)
+    serverRank: $(serverRank)
+    fanIP: $(fanIP)
+    rank: $(rank)
+    processes: $(processes)

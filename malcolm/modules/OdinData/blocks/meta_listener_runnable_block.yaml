@@ -1,0 +1,18 @@
+# Parameters passed in by parent Block
+- builtin.parameters.string:
+    name: mriPrefix
+    description: Malcolm resource id of the Block and prefix for children
+
+- builtin.parameters.string:
+    name: configDir
+    description: Where to store saved configs
+
+- builtin.parameters.string:
+    name: controlEndpoint
+    description: ZMQ control channel for MetaListener
+
+# Controller for this Block
+- OdinData.controllers.MetaListenerRunnableController:
+    mri: $(mriPrefix):META
+    configDir: $(configDir)
+    controlEndpoint: $(controlEndpoint)

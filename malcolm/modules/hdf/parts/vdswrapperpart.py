@@ -12,6 +12,17 @@ from malcolm.modules.builtin.vmetas import StringMeta, NumberMeta
 from malcolm.modules.scanpointgenerator.vmetas import PointGeneratorMeta
 
 
+configure_args = (
+    "generator", PointGeneratorMeta("Generator instance"), REQUIRED,
+    "fileDir", StringMeta("File dir to write HDF files into"), REQUIRED,
+    "fileTemplate", StringMeta(
+        """Printf style template to generate filename relative to fileDir.
+        Arguments are:
+          1) %s: EXCALIBUR"""), "%s.h5",
+    "fillValue", NumberMeta("int32", "Fill value for stripe spacing"), 0
+)
+
+
 @method_takes(
     "name", StringMeta("Name of part"), REQUIRED,
     "dataType", StringMeta("Data type of dataset"), REQUIRED)
@@ -19,7 +30,7 @@ class VDSWrapperPart(Part):
 
     # Constants for vds-gen CLI app
     VENV = "/dls_sw/work/tools/RHEL6-x86_64/odin/venv/bin/python"
-    VDS_GEN = "/dls_sw/work/tools/RHEL6-x86_64/odin/vds-gen/vdsgen/app.py"
+    VDS_GEN = "/scratch/home/detectors/vds/vds-gen/vdsgen/app.py"
     EMPTY = "-e"
     OUTPUT = "-o"
     FILES = "-f"
@@ -38,6 +49,8 @@ class VDSWrapperPart(Part):
     ALTERNATE = "--alternate"
     PROCESSES = "--processes"
     TOTAL_FRAMES = "--total-frames"
+    SOURCE_NODE = "--source_node"
+    TARGET_NODE = "--target_node"
 
     # Constants for class
     CREATE = "w"
@@ -114,14 +127,7 @@ class VDSWrapperPart(Part):
                 path="/entry/detector/%s_set" % axis, uniqueid="")
 
     @RunnableController.Configure
-    @method_takes(
-        "generator", PointGeneratorMeta("Generator instance"), REQUIRED,
-        "fileDir", StringMeta("File dir to write HDF files into"), REQUIRED,
-        "fileTemplate", StringMeta(
-            """Printf style template to generate filename relative to fileDir.
-            Arguments are:
-              1) %s: EXCALIBUR"""), "%s.h5",
-        "fillValue", NumberMeta("int32", "Fill value for stripe spacing"), 0)
+    @method_takes(*configure_args)
     def configure(self, context, completed_steps, steps_to_do, part_info,
                   params):
         self.done_when_reaches = completed_steps + steps_to_do
@@ -131,7 +137,7 @@ class VDSWrapperPart(Part):
         self.file_dir = params.fileDir
         self.fill_value = params.fillValue
 
-        self.create_vds(params.generator)
+        self.create_vds(params)
 
         # Open the VDS
         self.vds = h5.File(
@@ -143,10 +149,11 @@ class VDSWrapperPart(Part):
 
         return dataset_infos
 
-    def create_vds(self, generator):
+    def create_vds(self, params):
         raise NotImplementedError("Must be implemented in child classes")
 
-    def _construct_base_command(self, source_files, shape, mode, output=None):
+    def _construct_base_command(self, source_files, source_node, shape, mode,
+                                output=None):
         if output is None:
             output = self.OUTPUT_FILE
 
@@ -154,12 +161,12 @@ class VDSWrapperPart(Part):
                         self.MODE, mode]
         # Define sources as empty and define their eventual attributes
         base_command += [self.EMPTY,
-                         self.SHAPE] + shape + \
+                         self.SOURCE_SHAPE] + shape + \
                         [self.FILES] + source_files + \
                         [self.DATA_TYPE, self.data_type]
         # Override defaults
         base_command += [self.FILL_VALUE, str(self.fill_value),
-                         self.SOURCE_NODE, "/entry/detector/detector",
+                         self.SOURCE_NODE, source_node,
                          self.TARGET_NODE, "/entry/detector/detector"]
         # Define output file path
         base_command += [self.OUTPUT, output]

@@ -1,0 +1,11 @@
+# Define parameters to pass to child Blocks
+- builtin.defines.string:
+    name: configDir
+    value: /tmp
+
+# Eiger Detector
+- eiger.blocks.eiger_detector_runnable_block:
+   pvPrefix: EIGERDETECTOR
+   mriPrefix: BL02I-ML-EIGER-01
+   configDir: $(configDir)
+   processes: 4
