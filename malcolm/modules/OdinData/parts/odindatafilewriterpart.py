@@ -14,16 +14,13 @@ class OdinDataFileWriterPart(OdinDataPluginPart):
 
     def __init__(self, client, index):
         super(OdinDataFileWriterPart, self).__init__(client, index)
-        self.client.processor.load_file_writer_plugin(index)
-        self.client.processor.configure_file_process()
-
-        self.frame_count = 0
+        self.client.load_file_writer_plugin(index)
+        self.client.configure_file_process()
 
         # Provide inport to connect blocks on GUI, do it here for now
-        self.connect_source(self.client.processor.EIGER)
+        self.connect_source(self.client.EIGER)
 
-    def connect_source(self, source):
-        self.client.processor.connect_plugins(source, self.index)
+        self.done_when_reaches = 0
 
     @RunnableController.Configure
     @method_takes(
@@ -39,25 +36,28 @@ class OdinDataFileWriterPart(OdinDataPluginPart):
             "Compression type", ("LZ4", "BSLZ4")), None)
     def configure(self, context, completed_steps, steps_to_do, part_info,
                   params):
-        if params.chunks.tolist():
+        if params.chunks is not None:
             chunks = params.chunks.tolist()
         else:
             chunks = None
-        if params.compression:
+        if params.compression is not None:
             compression = self.COMPRESSION_TYPES[params.compression]
         else:
             compression = None
 
         for dataset in params.datasets:
-            self.client.processor.create_dataset(
+            self.client.create_dataset(
                 dataset, self.DATA_TYPES[params.dataType],
                 params.dimensions.tolist(),
                 chunks, compression)
 
-        self.frame_count = completed_steps + steps_to_do
+        self.client.configure_file(params.fileDir, params.fileName,
+                                   steps_to_do, params.acqID)
 
-        self.client.processor.configure_file(params.fileDir, params.fileName,
-                                             steps_to_do, params.acqID)
+    @RunnableController.Abort
+    @RunnableController.Reset
+    def stop(self, context):
+        self.client.stop()
 
     @RunnableController.PostRunReady
     @RunnableController.Seek
@@ -66,6 +66,6 @@ class OdinDataFileWriterPart(OdinDataPluginPart):
             "int16", "Frame ID to apply rewind from"), REQUIRED)
     def seek(self, context, completed_steps, steps_to_do, part_info, params):
         new_frame_count = completed_steps + steps_to_do
-        self.client.processor.rewind(new_frame_count - self.frame_count,
-                                     params.active_frame)
-        self.frame_count = new_frame_count
+        self.client.rewind(new_frame_count - self.done_when_reaches,
+                           params.active_frame)
+        self.done_when_reaches = new_frame_count

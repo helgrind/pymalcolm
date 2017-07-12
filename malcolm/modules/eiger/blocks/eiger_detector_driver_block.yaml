@@ -15,3 +15,30 @@
 
 - ADCore.includes.adbase_parts:
     prefix: $(prefix)
+
+- ca.parts.CAChoicePart:
+    name: streamEnable
+    description: Whether to enable ZMQ stream on Eiger detector
+    pv: $(prefix):StreamEnable
+    rbvSuff: _RBV
+    widget: combo
+
+- ca.parts.CAChoicePart:
+    name: callbackSource
+    description: Source of frames to pass down AD plugin chain
+    pv: $(prefix):DataSource
+    rbvSuff: _RBV
+    widget: combo
+
+- ca.parts.CAChoicePart:
+    name: compression
+    description: Compression mode of Eiger detector
+    pv: $(prefix):CompressionAlgo
+    rbvSuff: _RBV
+    widget: combo
+
+- ca.parts.CACharArrayPart:
+    name: acquisitionID
+    description: ID for next acquisition
+    pv: $(prefix):StreamHdrAppendix
+    widget: textinput

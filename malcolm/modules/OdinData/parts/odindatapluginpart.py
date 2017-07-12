@@ -11,3 +11,6 @@ class OdinDataPluginPart(Part):
         self.client = client
 
         # Provide outport to connect blocks on GUI
+
+    def connect_source(self, source):
+        self.client.connect_plugins(source, self.index)

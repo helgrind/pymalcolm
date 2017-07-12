@@ -8,7 +8,8 @@ from malcolm.modules.builtin.vmetas import StringMeta, NumberMeta
 from malcolm.modules.OdinData.parts import \
     OdinDataFileWriterPart, OdinDataEigerProcessPart, OdinDataEigerDecoderPart
 
-sys.path.insert(0, "/dls_sw/work/tools/RHEL6-x86_64/odin/odin-data-client")
+sys.path.insert(
+    0, "/dls_sw/work/tools/RHEL6-x86_64/odin/odin-data/tools/python")
 from odindataclient import OdinDataClient
 
 
@@ -34,20 +35,15 @@ class OdinDataRunnableController(RunnableController):
                                      RLock(use_cothread=False),
                                      server_rank=params.serverRank)
 
-        self.client.configure_shared_memory()
-        self.client.processor.configure_meta()
-
-        self.plugins = []
-        self.frames = None  # Size of dataset
         self.add_part(self._make_plugin_part(
-            OdinDataEigerDecoderPart, self.client.FRAME_RECEIVER))
+            OdinDataEigerDecoderPart, self.client.processor.INPUT))
         self.add_part(self._make_plugin_part(
             OdinDataEigerProcessPart, self.client.processor.EIGER))
         self.add_part(self._make_plugin_part(
             OdinDataFileWriterPart, self.client.processor.FILE_WRITER))
 
     def _make_plugin_part(self, plugin, index):
-        plugin_part = plugin(self.client, index)
+        plugin_part = plugin(self.client.processor, index, self.mri)
         return plugin_part
 
     def _request_status(self):

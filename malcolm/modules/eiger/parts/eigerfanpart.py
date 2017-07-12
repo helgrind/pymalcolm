@@ -5,8 +5,9 @@ from malcolm.modules.scanning.controllers import RunnableController
 from malcolm.core import Part, method_takes, method_also_takes, REQUIRED
 from malcolm.modules.builtin.vmetas import StringMeta
 
-sys.path.insert(0, "/dls_sw/work/tools/RHEL6-x86_64/odin/odin-data-client")
-from odindataclient import EigerFanClient
+sys.path.insert(
+    0, "/dls_sw/work/tools/RHEL6-x86_64/odin/eiger-daq/tools/python")
+from eigerfanclient import EigerFanClient
 
 
 @method_also_takes(

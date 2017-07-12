@@ -5,7 +5,7 @@
 
 # Eiger Detector
 - eiger.blocks.eiger_detector_runnable_block:
-   pvPrefix: EIGERDETECTOR
+   pvPrefix: BL02I-EA-EIGER-01
    mriPrefix: BL02I-ML-EIGER-01
    configDir: $(configDir)
    processes: 4

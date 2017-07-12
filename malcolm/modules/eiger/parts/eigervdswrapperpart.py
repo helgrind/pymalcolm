@@ -76,6 +76,12 @@ class EigerVDSWrapperPart(VDSWrapperPart):
         self.log.debug("Command: %s", command)
         check_call(command)
 
+    @RunnableController.Run
+    @RunnableController.Resume
+    def run(self, context, update_completed_steps):
+        self.log.info("Eiger VDS has nothing to update.")
+        self.close_files()
+
     def update_vds(self, ids):
         pass
 
