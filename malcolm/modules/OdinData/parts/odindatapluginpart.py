@@ -4,8 +4,8 @@ from malcolm.tags import outport
 
 class OdinDataPluginPart(Part):
 
-    def __init__(self, client, index):
-        name = "OdinData:" + index
+    def __init__(self, client, index, parent):
+        name = parent + ":" + index
         super(OdinDataPluginPart, self).__init__(name)
         self.index = index
         self.client = client

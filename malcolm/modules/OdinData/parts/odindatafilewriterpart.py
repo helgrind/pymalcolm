@@ -12,8 +12,8 @@ class OdinDataFileWriterPart(OdinDataPluginPart):
     DATA_TYPES = dict(uint8=0, uint16=1, uint32=2)
     COMPRESSION_TYPES = dict(LZ4=1, BSLZ4=2)
 
-    def __init__(self, client, index):
-        super(OdinDataFileWriterPart, self).__init__(client, index)
+    def __init__(self, client, index, parent):
+        super(OdinDataFileWriterPart, self).__init__(client, index, parent)
         self.client.load_file_writer_plugin(index)
         self.client.configure_file_process()
 
@@ -53,6 +53,28 @@ class OdinDataFileWriterPart(OdinDataPluginPart):
 
         self.client.configure_file(params.fileDir, params.fileName,
                                    steps_to_do, params.acqID)
+
+        self.done_when_reaches = self.client.request_frames_expected()
+
+    @RunnableController.Run
+    @RunnableController.Resume
+    def run(self, context, update_completed_steps):
+        self._wait_for_frames(context, 5.0)
+        self.log.info("All expected frames written")
+
+    def _wait_for_frames(self, context, timeout):
+        update_period = 1.0
+        time_waited = 0.0
+        while time_waited < timeout:
+            frames_written = self.client.request_frames_written()
+            self.log.info("Consumer %r: Written %s frames",
+                          self.name, frames_written)
+            if frames_written == self.done_when_reaches:
+                return
+            context.sleep(update_period)
+            time_waited += update_period
+        raise ValueError("Consumer %r didn't receive %s frames in time" %
+                         (self.name, self.done_when_reaches))
 
     @RunnableController.Abort
     @RunnableController.Reset
