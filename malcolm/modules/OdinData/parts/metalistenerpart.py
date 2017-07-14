@@ -8,8 +8,8 @@ from malcolm.modules.builtin.vmetas import StringMeta
 from malcolm.modules.scanpointgenerator.vmetas import PointGeneratorMeta
 
 sys.path.insert(
-    0, "/dls_sw/work/tools/RHEL6-x86_64/odin/odin-data/tools/python")
-from odindataclient import MetaListenerClient
+    0, "/dls_sw/work/tools/RHEL6-x86_64/odin/eiger-daq/tools/python")
+from eigerodindataclient import MetaListenerClient
 
 
 @method_also_takes(

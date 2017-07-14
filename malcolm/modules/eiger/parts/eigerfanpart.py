@@ -7,7 +7,7 @@ from malcolm.modules.builtin.vmetas import StringMeta
 
 sys.path.insert(
     0, "/dls_sw/work/tools/RHEL6-x86_64/odin/eiger-daq/tools/python")
-from eigerfanclient import EigerFanClient
+from eigerodindataclient import EigerFanClient
 
 
 @method_also_takes(
