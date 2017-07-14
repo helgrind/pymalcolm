@@ -12,7 +12,8 @@ class OdinDataFileWriterPart(OdinDataPluginPart):
     DATA_TYPES = dict(uint8=0, uint16=1, uint32=2)
     COMPRESSION_TYPES = dict(LZ4=1, BSLZ4=2)
 
-    def __init__(self, client, index, parent):
+    def __init__(self, client, parent):
+        index = client.FILE_WRITER
         super(OdinDataFileWriterPart, self).__init__(client, index, parent)
         self.client.load_file_writer_plugin(index)
         self.client.configure_file_process()

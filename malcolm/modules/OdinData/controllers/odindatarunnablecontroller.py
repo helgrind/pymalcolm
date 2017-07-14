@@ -35,15 +35,12 @@ class OdinDataRunnableController(RunnableController):
                                      RLock(use_cothread=False),
                                      server_rank=params.serverRank)
 
-        self.add_part(self._make_plugin_part(
-            OdinDataEigerDecoderPart, self.client.processor.INPUT))
-        self.add_part(self._make_plugin_part(
-            OdinDataEigerProcessPart, self.client.processor.EIGER))
-        self.add_part(self._make_plugin_part(
-            OdinDataFileWriterPart, self.client.processor.FILE_WRITER))
+        self.add_part(self._make_plugin_part(OdinDataEigerDecoderPart))
+        self.add_part(self._make_plugin_part(OdinDataEigerProcessPart))
+        self.add_part(self._make_plugin_part(OdinDataFileWriterPart))
 
-    def _make_plugin_part(self, plugin, index):
-        plugin_part = plugin(self.client.processor, index, self.mri)
+    def _make_plugin_part(self, plugin):
+        plugin_part = plugin(self.client.processor, self.mri)
         return plugin_part
 
     def _request_status(self):
