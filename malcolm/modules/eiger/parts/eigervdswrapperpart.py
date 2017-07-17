@@ -46,9 +46,10 @@ class EigerVDSWrapperPart(VDSWrapperPart):
     def create_vds(self, params):
 
         node_tree = ["frames", "frame_series", "frame_written",
-                     "offset_written", "real_time", "size",
+                     "offset_written", "real_time", "size", "hash",
                      "start_time", "stop_time",
-                     "config", "globalAppendix", "series"]
+                     "config", "globalAppendix", "series",
+                     "countrate", "flatfield", "mask"]
         with h5.File(self.vds_path, self.CREATE, libver="latest") as self.vds:
             for node in node_tree:
                 self.vds[node] = h5.ExternalLink(
