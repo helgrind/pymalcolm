@@ -24,6 +24,13 @@
     widget: combo
 
 - ca.parts.CAChoicePart:
+    name: FWEnable
+    description: Whether to enable ZMQ stream on Eiger detector
+    pv: $(prefix):StreamEnable
+    rbvSuff: _RBV
+    widget: combo
+
+- ca.parts.CAChoicePart:
     name: callbackSource
     description: Source of frames to pass down AD plugin chain
     pv: $(prefix):DataSource
