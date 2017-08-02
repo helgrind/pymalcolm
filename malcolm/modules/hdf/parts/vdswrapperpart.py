@@ -188,14 +188,14 @@ class VDSWrapperPart(Part):
         try:
             self.log.info("Monitoring raw files until ID reaches %s",
                           self.done_when_reaches)
-            while self.id < self.done_when_reaches:
+            while self.get_id(self.vds) < self.done_when_reaches:
                 context.sleep(0.1)  # Allow while loop to be aborted
                 ids = []
                 for dataset in self.raw_datasets:
                     ids.append(self.get_id(dataset))
                 self.update_vds(ids)
 
-            self.log.info("ID reached: %s", self.id)
+            self.log.info("ID reached: %s", self.get_id(self.vds))
         except Exception as error:
             self.log.exception("Error in run. Message:\n%s", error.message)
             self.close_files()
@@ -214,10 +214,6 @@ class VDSWrapperPart(Part):
 
     def update_vds(self, ids):
         raise NotImplementedError("Must be implemented in child classes")
-
-    @property
-    def id(self):
-        return self.get_id(self.vds)
 
     def get_id(self, file_):
         if file_.id.valid and self.ID in file_:
