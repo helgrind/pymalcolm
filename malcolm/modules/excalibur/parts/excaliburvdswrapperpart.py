@@ -85,8 +85,7 @@ class ExcaliburVDSWrapperPart(VDSWrapperPart):
 
         # Slice the full the extent of the minimum dataset from each dataset
         # Some nodes could be a row ahead meaning the shapes are mismatched
-        min_shape = tuple([slice(0, axis_size)
-                           for axis_size in min_sum.shape])
+        min_shape = tuple(slice(0, axis_size) for axis_size in min_sum.shape)
         sum_ = 0
         for dataset in self.raw_datasets:
             dataset[self.SUM].refresh()
