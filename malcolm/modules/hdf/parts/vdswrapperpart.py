@@ -155,7 +155,7 @@ class VDSWrapperPart(Part):
     def _construct_base_command(self, source_files, source_node, shape, mode,
                                 output=None):
         if output is None:
-            output = self.OUTPUT_FILE
+            output = self.OUTPUT_FILE % self.file_template
 
         base_command = [self.VENV, self.VDS_GEN, self.file_dir,
                         self.MODE, mode]

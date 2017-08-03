@@ -56,16 +56,11 @@ class ExcaliburVDSWrapperPart(VDSWrapperPart):
                  for fem in self.fems]
         shape = [str(d) for d in generator.shape] + \
                 [str(self.stripe_height), str(self.stripe_width)]
-        command = self._construct_base_command(files, shape, self.SUB_FRAMES)
+        command = self._construct_base_command(
+            files, "entry/detector/detector", shape, self.SUB_FRAMES)
         # Define Excalibur specific arguments
         command += [self.STRIPE_SPACING, "0",
-                    self.MODULE_SPACING, "121",
-                    self.FILL_VALUE, str(self.fill_value),
-                    self.SOURCE_NODE, "/entry/detector/detector",
-                    self.TARGET_NODE, "/entry/detector/detector"]
-        # Define output file path
-        command += [self.OUTPUT, self.file_template % self.OUTPUT_FILE]
-        command += [self.LOG_LEVEL, "1"]  # str(self.log.level / 10)]
+                    self.MODULE_SPACING, "121"]
         self.log.debug("Command: %s", command)
         check_call(command)
 
