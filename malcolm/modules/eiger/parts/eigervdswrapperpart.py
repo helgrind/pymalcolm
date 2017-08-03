@@ -26,16 +26,15 @@ configure_args += (
 class EigerVDSWrapperPart(VDSWrapperPart):
 
     # Constants for class
-    RAW_FILE_TEMPLATE = "EIGER{}.h5"
+    RAW_FILE_TEMPLATE = "EIGER{}"
     META_FILE_TEMPLATE = "{}_meta.hdf5"
-    OUTPUT_FILE = "EIGER.h5"
+    FLAT_FILE = "FLAT"
+    OUTPUT_FILE = "EIGER"
 
     def __init__(self, params):
         super(EigerVDSWrapperPart, self).__init__(params)
 
         self.processes = params.processes
-        self.raw_files = [self.RAW_FILE_TEMPLATE.format(idx + 1)
-                          for idx in range(params.processes)]
         self.dimensions = [str(params.dimensionY), str(params.dimensionX)]
 
     @RunnableController.Configure
@@ -55,12 +54,14 @@ class EigerVDSWrapperPart(VDSWrapperPart):
                 self.vds[node] = h5.ExternalLink(
                     "./" + self.META_FILE_TEMPLATE.format(params.acqID), node)
 
-        vds1 = "FLAT.h5"
+        vds1 = self.file_template % self.FLAT_FILE
 
         # Combine frames from each raw file into a flat interleaved dataset
+        files = [self.file_template % self.RAW_FILE_TEMPLATE.format(idx + 1)
+                 for idx in range(self.processes)]
         self.log.debug("Calling vds-gen to create interleaved VDS")
         command = self._construct_base_command(
-            self.raw_files, "data", self.dimensions, self.INTERLEAVE, vds1)
+            files, "data", self.dimensions, self.INTERLEAVE, vds1)
         # Define interleave specific arguments
         command += [self.TOTAL_FRAMES, str(sum(params.generator.shape)),
                     self.PROCESSES, str(self.processes)]
