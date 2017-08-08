@@ -46,7 +46,8 @@ class PandABlocksManagerController(ManagerController):
         # changes left over from last time
         self.changes = OrderedDict()
         # The PandABlock client that does the comms
-        self.client = PandABlocksClient(params.hostname, params.port, Queue)
+        self.client = PandABlocksClient(
+            params.hostname, params.port, Queue, dataport=None)
         # Filled in on reset
         self._stop_queue = None
         self._poll_spawned = None
