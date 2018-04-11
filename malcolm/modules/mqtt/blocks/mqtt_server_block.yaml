@@ -1,0 +1,26 @@
+- builtin.parameters.string:
+    name: mri
+    description: Malcolm resource id of the Block
+
+- builtin.parameters.string:
+    name: host
+    description: Address of MQTT broker
+    default: localhost
+
+- builtin.parameters.int32:
+    name: port
+    description: Port number to connect to the broker on
+    default: 1883
+
+- builtin.parameters.string:
+    name: keepalive
+    description: Number of seconds between pings to broker if no traffic since
+    default: 60
+
+- web.controllers.MQTTServerComms:
+    mri: $(mri)
+    host: $(host)
+    port: $(port)
+    keepalive: $(keepalive)
+
+- mqtt.parts.MQTTServerPart:
