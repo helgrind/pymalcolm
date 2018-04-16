@@ -1,6 +1,8 @@
 import logging
 import os
 import importlib
+import re
+import numpy
 
 from ruamel import yaml
 
@@ -196,7 +198,7 @@ class Section(object):
         assert yaml_path.endswith(".yaml"), \
             "Expected a/path/to/<yamlname>.yaml, got %r" % yaml_path
         yamlname = os.path.basename(yaml_path)[:-5]
-        log.debug("Parsing %s", yaml_path)
+        #log.debug("Parsing %s", yaml_path)
         with open(yaml_path) as f:
             text = f.read()
         # First separate them into their relevant sections
@@ -247,7 +249,17 @@ class Section(object):
             for s in substitutions:
                 if isinstance(v, str_):
                     # TODO: handle int etc here
-                    v = v.replace("$(%s)" % s, str(substitutions[s]))
+                    # If there are subs to be made
+                    if not re.search("\$\((" + s + ")\)", v) is None:  # string or number
+                        if isinstance(substitutions[s], (str_, numpy.generic)):
+                            v = v.replace("$(%s)" % s, str(substitutions[s]))
+                        else:  # e.g. boolean
+                            v = substitutions[s]
+            # Now handle any expression blocks
+            if isinstance(v, str_):
+                exps = re.findall("\$\[[^\]]+\]", v)
+                for exp in exps or []:
+                    v = v.replace(exp, str(eval(exp[2:-1])))
             param_dict[k] = v
         return param_dict
 

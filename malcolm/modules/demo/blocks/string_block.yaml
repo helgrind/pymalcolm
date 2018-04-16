@@ -1,0 +1,15 @@
+- builtin.parameters.string:
+    name: mri
+    description: Malcolm resource id of the Block
+
+- builtin.defines.docstring:
+    value: Hardware Block simulating a string PV
+
+- builtin.controllers.StatefulController:
+    mri: $(mri)
+    description: $(docstring)
+
+- ca.parts.CAStringPart:
+    name: value
+    description: The value of the string
+    pv: $(mri):val

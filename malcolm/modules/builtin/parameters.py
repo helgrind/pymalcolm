@@ -1,5 +1,5 @@
 from malcolm.core import method_takes, REQUIRED, OPTIONAL
-from malcolm.modules.builtin.vmetas import StringMeta, NumberMeta
+from malcolm.modules.builtin.vmetas import StringMeta, NumberMeta, BooleanMeta
 
 
 def args_for_takes(params, meta_cls, *meta_args):
@@ -45,4 +45,15 @@ def float64(params):
 def int32(params):
     """Add an int32 parameter to be passed when instantiating this YAML file"""
     return args_for_takes(params, NumberMeta, "int32")
+
+
+@method_takes(
+    "name", StringMeta(
+        "Specify that this class will take a parameter name"), REQUIRED,
+    "description", StringMeta(
+        "Description of this parameter"), REQUIRED,
+    "default", BooleanMeta("bool", default_desc), OPTIONAL)
+def boolean(params):
+    """Add a boolean parameter to be passed when instantiating this YAML file"""
+    return args_for_takes(params, BooleanMeta)
 

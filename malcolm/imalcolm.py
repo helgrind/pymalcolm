@@ -1,4 +1,4 @@
-#!/dls_sw/prod/tools/RHEL6-x86_64/defaults/bin/dls-python
+#!/home/lstant/projects/pymalcolm/pymalcenv/bin/python
 
 
 def make_async_logging(log_config):
@@ -70,7 +70,7 @@ def make_process():
         "handlers": {
             "console": {
                 "class": "logging.StreamHandler",
-                "level": "WARNING",
+                "level": "DEBUG",
                 "formatter": "simple",
                 "stream": "ext://sys.stdout"
             },
@@ -119,7 +119,7 @@ def make_process():
 
         "root": {
             "level": "DEBUG",
-            "handlers": ["graylog_gelf", "console"],
+            "handlers": ["console"],
         }
     }
 
@@ -169,17 +169,17 @@ def make_process():
         locals_d["gui"] = gui
 
     # Setup profiler dir
-    try:
-        from malcolm.modules.profiling.parts import ProfilingViewerPart
-        from malcolm.modules.profiling.profiler import Profiler
-    except ImportError:
-        raise
-    else:
-        if not os.path.isdir(args.profiledir):
-            os.mkdir(args.profiledir)
-        ProfilingViewerPart.profiledir = args.profiledir
-        locals_d["profiler"] = Profiler(args.profiledir)
-        #locals_d["profiler"].start()
+    #try:
+    #    from malcolm.modules.profiling.parts import ProfilingViewerPart
+    #    from malcolm.modules.profiling.profiler import Profiler
+    #except ImportError:
+    #    raise
+    #else:
+    #    if not os.path.isdir(args.profiledir):
+    #        os.mkdir(args.profiledir)
+    #    ProfilingViewerPart.profiledir = args.profiledir
+    #    locals_d["profiler"] = Profiler(args.profiledir)
+    #    #locals_d["profiler"].start()
 
     from malcolm.core import Process, call_with_params, Context, Queue
     from malcolm.modules.builtin.blocks import proxy_block
@@ -288,8 +288,8 @@ if __name__ == "__main__":
     #sys.path.insert(0,
     #                "/dls_sw/work/tools/RHEL6-x86_64/odin/venv/lib/python2.7/"
     #                "site-packages")
-    require("tornado", "numpy", "ruamel.yaml", "cothread==2.14", "vdsgen==0.2",
-            "pygelf==0.3.1", "scanpointgenerator", "plop", "h5py==2.7.1")
+    #require("tornado", "numpy", "ruamel.yaml", "cothread",
+    #        "pygelf", "scanpointgenerator")
     #sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", "cothread"))
     #sys.path.append(
     #    "/home/tmc43/virtualenvs/pymalcolm/lib/python2.7/site-packages")

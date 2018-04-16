@@ -17,10 +17,24 @@
     description: Number of seconds between pings to broker if no traffic since
     default: 60
 
-- web.controllers.MQTTServerComms:
+- builtin.parameters.string:
+    name: block
+    description: Block name to monitor
+
+- builtin.parameters.string:
+    name: attribute
+    description: Attribute of block to monitor
+
+- builtin.parameters.boolean:
+    name: read_only
+    description: Should MQTT only read and not write?
+    default: True
+
+- mqtt.controllers.MQTTServerComms:
     mri: $(mri)
     host: $(host)
     port: $(port)
     keepalive: $(keepalive)
-
-- mqtt.parts.MQTTServerPart:
+    block: $(block)
+    attribute: $(attribute)
+    read_only: $(read_only)

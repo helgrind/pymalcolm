@@ -1,0 +1,29 @@
+# To start the IOC, run Launcher -> Utilities -> GDA SWMR AreaDetector Sim
+- builtin.defines.cmd_string:
+    name: hostname
+    cmd: hostname -s
+
+- builtin.defines.export_env_string:
+    name: EPICS_CA_SERVER_PORT
+    value: 5064
+
+- builtin.defines.export_env_string:
+    name: EPICS_CA_REPEATER_PORT
+    value: 5065
+
+- builtin.defines.string:
+    name: configDir
+    value: $(yamldir)/saved_designs
+
+# Create some Blocks
+- demo.blocks.counter_block:
+    mri: COUNTER
+
+- mqtt.blocks.gauge_block:
+    mri: GAUGE
+    prefix: gauge
+
+# Add a webserver
+- web.blocks.web_server_block:
+    mri: WEB
+    port: 8080

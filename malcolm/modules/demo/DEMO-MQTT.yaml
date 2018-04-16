@@ -1,14 +1,84 @@
 # Create some Blocks
-- demo.blocks.hello_block:
-    mri: HELLO
+- demo.blocks.gauge_block:
+    mri: CELL1-AMP-FWDPOWER
 
-- demo.blocks.hello_block:
-    mri: HELLO2
+- demo.blocks.gauge_block:
+    mri: CELL1-AMP-REVPOWER
 
-- demo.blocks.counter_block:
-    mri: COUNTER
+- demo.blocks.gauge_block:
+    mri: CELL2-AMP-FWDPOWER
 
-# Add a webserver
-- web.blocks.web_server_block:
-    mri: WEB
-    port: 8080
+- demo.blocks.gauge_block:
+    mri: CELL2-AMP-REVPOWER
+
+- demo.blocks.gauge_block:
+    mri: CELL3-AMP-FWDPOWER
+
+- demo.blocks.gauge_block:
+    mri: CELL3-AMP-REVPOWER
+
+- demo.blocks.string_block:
+    mri: CELL1-AMP-STATE
+
+- demo.blocks.string_block:
+    mri: CELL2-AMP-STATE
+
+- demo.blocks.string_block:
+    mri: CELL3-AMP-STATE
+
+- mqtt.blocks.mqtt_server_block:
+    mri: MQTT-C1AF
+    block: CELL1-AMP-FWDPOWER
+    attribute: value
+    host: test.mosquitto.org
+    read_only: False
+
+- mqtt.blocks.mqtt_server_block:
+    mri: MQTT-C1AR
+    block: CELL1-AMP-REVPOWER
+    attribute: value
+    host: test.mosquitto.org
+    read_only: False
+
+- mqtt.blocks.mqtt_server_block:
+    mri: MQTT-C2AF
+    block: CELL2-AMP-FWDPOWER
+    attribute: value
+    host: test.mosquitto.org
+
+- mqtt.blocks.mqtt_server_block:
+    mri: MQTT-C2AR
+    block: CELL2-AMP-REVPOWER
+    attribute: value
+    host: test.mosquitto.org
+
+- mqtt.blocks.mqtt_server_block:
+    mri: MQTT-C3AF
+    block: CELL3-AMP-FWDPOWER
+    attribute: value
+    host: test.mosquitto.org
+
+- mqtt.blocks.mqtt_server_block:
+    mri: MQTT-C3AR
+    block: CELL3-AMP-REVPOWER
+    attribute: value
+    host: test.mosquitto.org
+
+- mqtt.blocks.mqtt_server_block:
+    mri: MQTT-C1AS
+    block: CELL1-AMP-STATE
+    attribute: value
+    host: test.mosquitto.org
+    read_only: False
+
+- mqtt.blocks.mqtt_server_block:
+    mri: MQTT-C2AS
+    block: CELL2-AMP-STATE
+    attribute: value
+    host: test.mosquitto.org
+
+- mqtt.blocks.mqtt_server_block:
+    mri: MQTT-C3AS
+    block: CELL3-AMP-STATE
+    attribute: value
+    host: test.mosquitto.org

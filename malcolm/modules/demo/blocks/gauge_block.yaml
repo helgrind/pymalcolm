@@ -1,0 +1,15 @@
+- builtin.parameters.string:
+    name: mri
+    description: Malcolm resource id of the Block
+
+- builtin.defines.docstring:
+    value: Hardware Block simulating a gauge
+
+- builtin.controllers.StatefulController:
+    mri: $(mri)
+    description: $(docstring)
+
+- ca.parts.CADoublePart:
+    name: value
+    description: The value of the gauge
+    pv: $(mri):val

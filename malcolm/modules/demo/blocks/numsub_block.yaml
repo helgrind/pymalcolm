@@ -1,0 +1,24 @@
+# Define the parameters this Block will take
+- builtin.parameters.string:
+    name: mri
+    description: Malcolm resource id of the Block
+
+- builtin.defines.docstring:
+    value: Hardware Block with a greet() Method
+
+- builtin.parameters.int32:
+    name: a
+    description: a
+
+- builtin.parameters.float64:
+    name: b
+    description: b
+
+- builtin.parameters.string:
+    name: word
+    description: word
+
+# The Controller will create the Block for us
+- builtin.controllers.BasicController:
+    mri: $(mri)
+    description: The $(word) is $[($(a) + $(b)**2) * 6] if the question is $[6] times $[3+4].

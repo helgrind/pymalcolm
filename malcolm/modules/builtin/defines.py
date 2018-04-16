@@ -4,7 +4,7 @@ import types
 import sys
 
 from malcolm.core import method_takes, REQUIRED, Importer
-from malcolm.modules.builtin.vmetas import StringMeta, NumberMeta
+from malcolm.modules.builtin.vmetas import StringMeta, NumberMeta, BooleanMeta
 
 
 @method_takes(
@@ -20,7 +20,7 @@ def string(params):
     "value", NumberMeta(
         "float64", "The value of the defined parameter"), REQUIRED)
 def float64(params):
-    """Define a string parameter to be used within this YAML file"""
+    """Define a float64 parameter to be used within this YAML file"""
     return {params.name: params.value}
 
 
@@ -29,7 +29,16 @@ def float64(params):
     "value", NumberMeta(
         "int32", "The value of the defined parameter"), REQUIRED)
 def int32(params):
-    """Define a string parameter to be used within this YAML file"""
+    """Define an int32 parameter to be used within this YAML file"""
+    return {params.name: params.value}
+
+
+@method_takes(
+    "name", StringMeta("The name of the defined parameter"), REQUIRED,
+    "value", BooleanMeta(
+        "bool", "The value of the defined parameter"), REQUIRED)
+def boolean(params):
+    """Define a boolean parameter to be used within this YAML file"""
     return {params.name: params.value}
 
 

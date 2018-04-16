@@ -1,0 +1,6 @@
+# Create some Blocks
+- demo.blocks.numsub_block:
+    mri: NUMSUB
+    a: 3
+    b: 2
+    word: Answer
