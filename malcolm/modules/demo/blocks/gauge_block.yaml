@@ -12,4 +12,4 @@
 - ca.parts.CADoublePart:
     name: value
     description: The value of the gauge
-    pv: $(mri):val
+    pv: $(mri)

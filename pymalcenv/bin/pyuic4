@@ -1,2 +1,0 @@
-#!/bin/sh
-exec /home/lstant/projects/pymalcolm/pymalcenv/bin/python /home/lstant/projects/pymalcolm/pymalcenv/lib64/python2.7/site-packages/PyQt4/uic/pyuic.py ${1+"$@"}

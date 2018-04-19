@@ -11,6 +11,7 @@ from malcolm.modules.builtin.vmetas import StringMeta, NumberMeta, BooleanMeta
     "keepalive", NumberMeta("int32", "Number of seconds between pings to broker if no traffic since"), 60,
     "block", StringMeta("Block name to monitor"), "",
     "attribute", StringMeta("Attribute of block to monitor"), "",
+    "topic_prefix", StringMeta("Prefix to prepend to MQTT topic (no slash)"), "",
     "read_only", BooleanMeta("Should MQTT only read and not write?"), True)
 class MQTTServerComms(ServerComms):
     """A class for communication between Malcolm and an MQTT broker"""
@@ -27,7 +28,8 @@ class MQTTServerComms(ServerComms):
         super(MQTTServerComms, self).do_init()
         self._blockname = self.params.block
         self._attributename = self.params.attribute
-        self._topic = str.join("", [self._blockname, "/", self._attributename])
+        self._topic = str.join("", [self.params.topic_prefix, "/", self.params.block, 
+            "/", self.params.attribute])
         self.start_io_loop()
 
     def start_io_loop(self):

@@ -1,84 +1,171 @@
 # Create some Blocks
 - demo.blocks.gauge_block:
-    mri: CELL1-AMP-FWDPOWER
+    mri: SR17S-RF-COMB-11:PKF-C
 
 - demo.blocks.gauge_block:
-    mri: CELL1-AMP-REVPOWER
+    mri: SR17S-RF-CRCAV-10:PKR-C
 
 - demo.blocks.gauge_block:
-    mri: CELL2-AMP-FWDPOWER
+    mri: SR17S-RF-COMB-21:PKF-C
 
 - demo.blocks.gauge_block:
-    mri: CELL2-AMP-REVPOWER
+    mri: SR17S-RF-CRCAV-20:PKR-C
 
 - demo.blocks.gauge_block:
-    mri: CELL3-AMP-FWDPOWER
+    mri: SR17S-RF-COMB-31:PKF-C
 
 - demo.blocks.gauge_block:
-    mri: CELL3-AMP-REVPOWER
+    mri: SR17S-RF-CRCAV-30:PKR-C
 
 - demo.blocks.string_block:
-    mri: CELL1-AMP-STATE
+    mri: SR17S-RF-ICS-10:STATEG
 
 - demo.blocks.string_block:
-    mri: CELL2-AMP-STATE
+    mri: SR17S-RF-ICS-20:STATEG
 
 - demo.blocks.string_block:
-    mri: CELL3-AMP-STATE
+    mri: SR17S-RF-ICS-30:STATEG
+
+- demo.blocks.gauge_block:
+    mri: SR-RF-CLTS-01:CAVTOPEQR1
+
+- demo.blocks.gauge_block:
+    mri: SR-RF-CLTS-02:CAVTOPEQR1
+
+- demo.blocks.gauge_block:
+    mri: SR-RF-CLTS-03:CAVTOPEQR1
+
+- demo.blocks.gauge_block:
+    mri: SR-RF-CLTS-01:LN2IN2
+
+- demo.blocks.gauge_block:
+    mri: SR-RF-CLTS-02:LN2IN2
+
+- demo.blocks.gauge_block:
+    mri: SR-RF-CLTS-03:LN2IN2
+
+- demo.blocks.gauge_block:
+    mri: SR-RF-HE-01:LEVEL
+
+- demo.blocks.gauge_block:
+    mri: SR-RF-HE-02:LEVEL
+
+- demo.blocks.gauge_block:
+    mri: SR-RF-HE-03:LEVEL
+
+- demo.blocks.gauge_block:
+    mri: SR-RF-LN2-02:LEVEL
 
 - mqtt.blocks.mqtt_server_block:
     mri: MQTT-C1AF
-    block: CELL1-AMP-FWDPOWER
+    block: SR17S-RF-COMB-11:PKF-C
     attribute: value
-    host: test.mosquitto.org
-    read_only: False
+    host: localhost
 
 - mqtt.blocks.mqtt_server_block:
     mri: MQTT-C1AR
-    block: CELL1-AMP-REVPOWER
+    block: SR17S-RF-CRCAV-10:PKR-C
     attribute: value
-    host: test.mosquitto.org
-    read_only: False
+    host: localhost
 
 - mqtt.blocks.mqtt_server_block:
     mri: MQTT-C2AF
-    block: CELL2-AMP-FWDPOWER
+    block: SR17S-RF-COMB-21:PKF-C
     attribute: value
-    host: test.mosquitto.org
+    host: localhost
 
 - mqtt.blocks.mqtt_server_block:
     mri: MQTT-C2AR
-    block: CELL2-AMP-REVPOWER
+    block: SR17S-RF-CRCAV-20:PKR-C
     attribute: value
-    host: test.mosquitto.org
+    host: localhost
 
 - mqtt.blocks.mqtt_server_block:
     mri: MQTT-C3AF
-    block: CELL3-AMP-FWDPOWER
+    block: SR17S-RF-COMB-31:PKF-C
     attribute: value
-    host: test.mosquitto.org
+    host: localhost
 
 - mqtt.blocks.mqtt_server_block:
     mri: MQTT-C3AR
-    block: CELL3-AMP-REVPOWER
+    block: SR17S-RF-CRCAV-30:PKR-C
     attribute: value
-    host: test.mosquitto.org
+    host: localhost
 
 - mqtt.blocks.mqtt_server_block:
     mri: MQTT-C1AS
-    block: CELL1-AMP-STATE
+    block: SR17S-RF-ICS-10:STATEG
     attribute: value
-    host: test.mosquitto.org
-    read_only: False
+    host: localhost
 
 - mqtt.blocks.mqtt_server_block:
     mri: MQTT-C2AS
-    block: CELL2-AMP-STATE
+    block: SR17S-RF-ICS-20:STATEG
     attribute: value
-    host: test.mosquitto.org
+    host: localhost
 
 - mqtt.blocks.mqtt_server_block:
     mri: MQTT-C3AS
-    block: CELL3-AMP-STATE
+    block: SR17S-RF-ICS-30:STATEG
     attribute: value
-    host: test.mosquitto.org
+    host: localhost
+
+- mqtt.blocks.mqtt_server_block:
+    mri: MQTT-C1HL
+    block: SR-RF-HE-01:LEVEL
+    attribute: value
+    host: localhost
+
+- mqtt.blocks.mqtt_server_block:
+    mri: MQTT-C2HL
+    block: SR-RF-HE-02:LEVEL
+    attribute: value
+    host: localhost
+
+- mqtt.blocks.mqtt_server_block:
+    mri: MQTT-C3HL
+    block: SR-RF-HE-03:LEVEL
+    attribute: value
+    host: localhost
+
+- mqtt.blocks.mqtt_server_block:
+    mri: MQTT-C1HT
+    block: SR-RF-CLTS-01:CAVTOPEQR1
+    attribute: value
+    host: localhost
+
+- mqtt.blocks.mqtt_server_block:
+    mri: MQTT-C2HT
+    block: SR-RF-CLTS-02:CAVTOPEQR1
+    attribute: value
+    host: localhost
+
+- mqtt.blocks.mqtt_server_block:
+    mri: MQTT-C3HT
+    block: SR-RF-CLTS-03:CAVTOPEQR1
+    attribute: value
+    host: localhost
+
+- mqtt.blocks.mqtt_server_block:
+    mri: MQTT-C1NT
+    block: SR-RF-CLTS-01:LN2IN2
+    attribute: value
+    host: localhost
+
+- mqtt.blocks.mqtt_server_block:
+    mri: MQTT-C2NT
+    block: SR-RF-CLTS-02:LN2IN2
+    attribute: value
+    host: localhost
+
+- mqtt.blocks.mqtt_server_block:
+    mri: MQTT-C3NT
+    block: SR-RF-CLTS-03:LN2IN2
+    attribute: value
+    host: localhost
+
+- mqtt.blocks.mqtt_server_block:
+    mri: MQTT-CRYO1
+    block: SR-RF-LN2-02:LEVEL
+    attribute: value
+    host: localhost

@@ -140,33 +140,34 @@ def make_process():
 
     # Setup Qt gui, must be done before any malcolm imports otherwise cothread
     # starts in the wrong thread
-    try:
-        os.environ['DISPLAY']
-        # If this environment variable doesn't exist then there is probably no
-        # X server for us to talk to.
-    except KeyError:
-        qt_thread = None
-    else:
-        from PyQt4.Qt import QApplication
+    #try:
+    #    os.environ['DISPLAY']
+    #    # If this environment variable doesn't exist then there is probably no
+    #    # X server for us to talk to.
+    #except KeyError:
+    #    qt_thread = None
+    #else:
+    #    from PyQt4.Qt import QApplication
 
         # Start qt
-        def start_qt():
-            app = QApplication(sys.argv)
-            app.setQuitOnLastWindowClosed(False)
-            locals_d["app"] = app
-            from malcolm.gui.guiopener import GuiOpener
-            global opener
-            opener = GuiOpener()
-            app.exec_()
+    #    def start_qt():
+    #        app = QApplication(sys.argv)
+    #        app.setQuitOnLastWindowClosed(False)
+    #        locals_d["app"] = app
+    #        from malcolm.gui.guiopener import GuiOpener
+    #        global opener
+    #        opener = GuiOpener()
+    #        app.exec_()
 
-        qt_thread = threading.Thread(target=start_qt)
-        qt_thread.setDaemon(True)
+    #    qt_thread = threading.Thread(target=start_qt)
+    #    qt_thread.setDaemon(True)
 
-        def gui(block):
-            global opener
-            opener.open_gui(block, proc)
+    #    def gui(block):
+    #        global opener
+    #        opener.open_gui(block, proc)
 
-        locals_d["gui"] = gui
+    #    locals_d["gui"] = gui
+    qt_thread = None
 
     # Setup profiler dir
     #try:

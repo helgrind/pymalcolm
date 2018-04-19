@@ -25,6 +25,11 @@
     name: attribute
     description: Attribute of block to monitor
 
+- builtin.parameters.string:
+    name: topic_prefix
+    description: Prefix to prepend to MQTT topic (no slash)
+    default: DLS
+
 - builtin.parameters.boolean:
     name: read_only
     description: Should MQTT only read and not write?
@@ -37,4 +42,5 @@
     keepalive: $(keepalive)
     block: $(block)
     attribute: $(attribute)
+    topic_prefix: $(topic_prefix)
     read_only: $(read_only)

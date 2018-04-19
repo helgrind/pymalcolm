@@ -12,4 +12,4 @@
 - ca.parts.CAStringPart:
     name: value
     description: The value of the string
-    pv: $(mri):val
+    pv: $(mri)
